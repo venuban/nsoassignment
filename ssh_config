@@ -1,19 +1,34 @@
-Host deva
-  HostName 91.106.198.226
-  User ubuntu
-  ProxyJump bastion
-
-Host devb
-  HostName 91.106.198.139
-  User ubuntu
-  ProxyJump bastion
-
-Host devc
-  HostName 91.106.198.241
-  User ubuntu
-  ProxyJump bastion
-
-Host bastionnso
-  HostName 89.42.141.216
-  User ubuntu
+ HostName 89.42.141.216
   IdentityFile ~/.ssh/id_rsa
+  UserKnownHostsFile=~/dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+
+Host HAproxy
+  User ubuntu
+  HostName 89.42.141.188
+  IdentityFile ~/.ssh/id_rsa
+  UserKnownHostsFile=~/dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+
+Host devA
+  User ubuntu
+  HostName 91.106.198.226
+  ProxyJump bastionNSO
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+
+Host devB
+  User ubuntu
+  HostName 91.106.198.139
+  ProxyJump bastionNSO
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+
+Host devC
+  User ubuntu
+  HostName 91.106.198.241
+  ProxyJump bastionNSO
+  StrictHostKeyChecking no
+  PasswordAuthentication no
