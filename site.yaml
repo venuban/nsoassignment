@@ -1,6 +1,11 @@
-Installs and configures haproxy on the haproxy host
+---
+- hosts: all
+  gather_facts: true
+#Installs and configures haproxy on the haproxy host
 - hosts: HAproxy
   become: yes
+  become_method: sudo
+  gather_facts: yes
   tasks:
     - name: apt update
       apt:
@@ -9,22 +14,23 @@ Installs and configures haproxy on the haproxy host
     - name: Install haproxy
       apt:
         name: haproxy
-        state: present
+        state: latest
 
     - name: Configure haproxy
-      template:
+      copy:
         src: haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
-      become: true
+      become: yes
 
 - hosts: webservers
   become: yes
+  become_method: sudo
+  gather_facts: yes
   tasks:
     - name: apt update
       apt:
         update_cache: yes
-
-    - name: Install Python and Flask
+     - name: Install Python and Flask
       become: yes
       apt:
         name:
@@ -32,24 +38,16 @@ Installs and configures haproxy on the haproxy host
           - python3-pip
         state: present
     - name: Intsall Flask
-      apt:
-        name: flask app
+      become: true
+      pip:
+        executable: pip3
+        name: flask
         state: present
 
-
-    - name: Copy Flask app
-      hosts: webservers
-      become: true
-  tasks:
 
     - name: Copy Flask app files
       copy:
         src: appA.py
         dest: /opt/appA.py
-      notify:
-        - start flask app
-  handlers:
-   - name: start flask app
-     service:
-      name: appA.py
-      state: started
+        owner: ubuntu
+        mode: "0755"
