@@ -23,9 +23,9 @@
         executable: pip3
         name: flask
         state: present
-    - name: create directory
-      file:
-        path: /home/ubuntu/flask-app
+    - name: Install gunicorn
+      apt:
+       name: gunicorn
 
 
     - name: Copy Flask app files
@@ -34,7 +34,8 @@
         dest: /home/ubuntu/app.py
         owner: ubuntu
         mode: "0755"
-
+    - name: Run flask application
+      shell: gunicorn -w 2 -D -b 0.0.0.0:80 app:app
 
 #Installs and configures haproxy on the haproxy host
 - hosts: HAproxy
@@ -56,6 +57,7 @@
         src: haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
       become: yes
+      
     - name: Restart haproxy
       service:
         name: haproxy
