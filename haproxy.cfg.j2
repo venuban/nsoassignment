@@ -41,5 +41,5 @@ backend web_servers
         mode http
         balance roundrobin
 {% for host in groups["webservers"] %}
-        server {{ host }} {{ hostvars[host]["ansible_default_ipv4"]["address"] }}:80 check
+        server {{ host }} {{ hostvars[host]["ansible_default_ipv4"]["address"] }}:80 
 {% endfor %}
