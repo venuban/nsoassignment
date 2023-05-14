@@ -1,6 +1,41 @@
 ---
 - hosts: all
   gather_facts: true
+
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+  tasks:
+    - name: apt update
+      apt:
+        update_cache: yes
+    - name: Install Python and Flask
+      become: yes
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+    - name: Intsall Flask
+      become: true
+      pip:
+        executable: pip3
+        name: flask
+        state: present
+    - name: create directory
+      file:
+        path: /home/ubuntu/flask-app
+
+
+    - name: Copy Flask app files
+      copy:
+        src: app.py
+        dest: /home/ubuntu/app.py
+        owner: ubuntu
+        mode: "0755"
+
+
 #Installs and configures haproxy on the haproxy host
 - hosts: HAproxy
   become: yes
@@ -21,44 +56,6 @@
         src: haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
       become: yes
-
-
-- hosts: webservers
-  become: yes
-  become_method: sudo
-  gather_facts: yes
-  tasks:
-    - name: apt update
-      apt:
-        update_cache: yes
-         - name: Install Python and Flask
-      become: yes
-      apt:
-        name:
-          - python3
-          - python3-pip
-        state: present
-    - name: Intsall Flask
-      become: true
-      pip:
-        executable: pip3
-        name: flask
-        state: present
-
-
-    - name: Copy Flask app files
-      copy:
-        src: appA.py
-        dest: /opt/appA.py
-        owner: ubuntu
-        mode: "0755"
-
-
-- hosts: HAproxy
-  become: yes
-  become_method: sudo
-  gather_facts: yes
-  tasks:
     - name: Restart haproxy
       service:
         name: haproxy
