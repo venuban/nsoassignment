@@ -45,4 +45,4 @@
         src: app.py
         dest: /home/ubuntu/app.py
     - name: Running Flask application
-      shell: gunicorn -w 2 -D -b 0.0.0.0:8080 app:app
+      shell: gunicorn -w 2 -D -b 0.0.0.0:80 app:app
