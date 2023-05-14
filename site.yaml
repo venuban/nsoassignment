@@ -1,65 +1,47 @@
 ---
 - hosts: all
-  gather_facts: true
-
-- hosts: webservers
+  become: yes
+  gather_facts: yes
+- hosts: HAproxy
   become: yes
   become_method: sudo
-  gather_facts: yes
   tasks:
     - name: apt update
       apt:
-        update_cache: yes
-    - name: Install Python and Flask
-      become: yes
+        update_cache: true
+    - name: Install haproxy
+      apt:
+        name: haproxy
+        state: present
+    - name: Configure haproxy
+      template:
+        src: haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+        
+    - name: restart haproxy
+      service:
+        name: haproxy
+        state: restarted
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: apt update
+      apt:
+        update_cache: true
+    - name: Install Python,pip3,Flask and venv
       apt:
         name:
           - python3
           - python3-pip
+          - python3-venv
         state: present
-    - name: Intsall Flask
-      become: true
-      pip:
-        executable: pip3
-        name: flask
-        state: present
-    - name: Install gunicorn
+    - name: Installing Gunicorn
       apt:
-       name: gunicorn
-
-
+        name: gunicorn
     - name: Copy Flask app files
       copy:
         src: app.py
         dest: /home/ubuntu/app.py
-        owner: ubuntu
-        mode: "0755"
-    - name: Run flask application
-      shell: gunicorn -w 2 -D -b 0.0.0.0:80 app:app
-
-#Installs and configures haproxy on the haproxy host
-- hosts: HAproxy
-  become: yes
-  become_method: sudo
-  gather_facts: yes
-  tasks:
-    - name: apt update
-      apt:
-        update_cache: yes
-
-    - name: Install haproxy
-      apt:
-        name: haproxy
-        state: latest
-
-    - name: Configure haproxy
-      copy:
-        src: haproxy.cfg.j2
-        dest: /etc/haproxy/haproxy.cfg
-      become: yes
-      
-    - name: Restart haproxy
-      service:
-        name: haproxy
-        state: restarted
-                                         
+    - name: Running Flask application
+      shell: gunicorn -w 2 -D -b 0.0.0.0:8080 app:app
