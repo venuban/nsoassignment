@@ -21,7 +21,7 @@
         src: haproxy.cfg.j2
         dest: /etc/haproxy/haproxy.cfg
       become: yes
-      
+
     - name: Restart haproxy
       service:
         name: haproxy
@@ -35,7 +35,7 @@
     - name: apt update
       apt:
         update_cache: yes
-     - name: Install Python and Flask
+    - name: Install Python and Flask
       become: yes
       apt:
         name:
@@ -56,3 +56,5 @@
         dest: /opt/appA.py
         owner: ubuntu
         mode: "0755"
+                                      
+                              
