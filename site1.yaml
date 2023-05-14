@@ -22,10 +22,6 @@
         dest: /etc/haproxy/haproxy.cfg
       become: yes
 
-    - name: Restart haproxy
-      service:
-        name: haproxy
-        state: restarted
 
 - hosts: webservers
   become: yes
@@ -35,7 +31,7 @@
     - name: apt update
       apt:
         update_cache: yes
-    - name: Install Python and Flask
+         - name: Install Python and Flask
       become: yes
       apt:
         name:
@@ -56,5 +52,15 @@
         dest: /opt/appA.py
         owner: ubuntu
         mode: "0755"
-                                      
-                              
+
+
+- hosts: HAproxy
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+  tasks:
+    - name: Restart haproxy
+      service:
+        name: haproxy
+        state: restarted
+                                         
